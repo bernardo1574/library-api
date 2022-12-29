@@ -34,4 +34,11 @@ public class BookServiceImpl implements BookService {
         // TODO Auto-generated method stub
         
     }
+
+    @Override
+    public Book update(Book book) {
+        return book;
+        // TODO Auto-generated method stub
+        
+    }
 }

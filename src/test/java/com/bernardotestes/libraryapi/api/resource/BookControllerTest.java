@@ -154,7 +154,7 @@ public class BookControllerTest {
 
     }
 
-     @Test
+    @Test
     @DisplayName("Deve retornar resource not found quando não encontrar o livro para deletar.")
     public void notFoundDeleteBook() throws Exception {
 
@@ -167,6 +167,51 @@ public class BookControllerTest {
         mvc.perform(request)
                 .andExpect(status().isNotFound());
 
+    }
+
+    @Test
+    @DisplayName("Deve atualizar um livro ")
+    public void updateBookTest() throws Exception {
+        Long id = 1l;
+        String json = new ObjectMapper().writeValueAsString(createNewBook());
+
+        Book updatingBook = Book.builder().id(id).title("some title").author("some author").isbn("321").build();
+        Book updatedBook = Book.builder().author("Bernardo").title("Meu Segundo livro").isbn("321").id(id).build();
+
+        BDDMockito.given(service.getById(id)).willReturn(Optional.of(updatingBook));
+        BDDMockito.given(service.update(updatingBook)).willReturn(updatedBook);
+
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .put(BOOK_API.concat("/"+id))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(json);
+
+        mvc.perform(request)
+            .andExpect(status().isOk())
+            .andExpect( jsonPath("id").value(updatedBook.getId()) )
+            .andExpect( jsonPath("title").value(updatedBook.getTitle()) )
+            .andExpect( jsonPath("author").value(updatedBook.getAuthor()) )
+            .andExpect( jsonPath("isbn").value(updatingBook.getIsbn()) )
+        ;
+    }
+    
+    @Test
+    @DisplayName("Deve retornar not found ao tentar atualizar um livro inexistente")
+    public void updateInexistentBookTest() throws Exception {
+        String json = new ObjectMapper().writeValueAsString(createNewBook());
+
+        BDDMockito.given(service.getById(Mockito.anyLong())).willReturn(Optional.empty());
+
+        MockHttpServletRequestBuilder request = MockMvcRequestBuilders
+                .put(BOOK_API.concat("/1"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(json);
+
+        mvc.perform(request)
+            .andExpect(status().isNotFound())
+        ;
     }
 
     private static BookDTO createNewBook() {

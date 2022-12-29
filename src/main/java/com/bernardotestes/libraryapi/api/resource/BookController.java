@@ -46,13 +46,23 @@ public class BookController {
     @DeleteMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
-        Book book = service
-                .getById(id)
-                .orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        Book book = service.getById(id).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         service.delete(book);
 
     }
-    
+   
+    @PutMapping("{id}")
+    public BookDTO update(@PathVariable Long id, BookDTO dto) {
+        return service.getById(id).map(book -> {
+
+            book.setTitle(dto.getTitle());
+            book.setAuthor(dto.getAuthor());
+            book = service.update(book);
+            return modelMapper.map(book, BookDTO.class);
+            
+        }).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    }
+
     // EXCEPTIONS
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)

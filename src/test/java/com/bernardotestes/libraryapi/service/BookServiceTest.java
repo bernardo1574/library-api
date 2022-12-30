@@ -10,19 +10,17 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -58,7 +56,7 @@ public class BookServiceTest {
 
     @Test
     @DisplayName("Deve lançar erro de negocio ao tentar salvar um livro com isbn duplicado")
-    public void shouldNotSaveABookISBN() {
+    public void shouldNotSaveABookIsbnTest() {
         Book book = createValidBook();
         Mockito.when(repository.existsByIsbn(Mockito.anyString())).thenReturn(true);
         
@@ -74,8 +72,8 @@ public class BookServiceTest {
 
     @Test
     @DisplayName("Deve obter um livro por Id")
-    public void getBookById() {
-        Long id = 1l;
+    public void getBookByIdTest() {
+        Long id = 1L;
         Book book = createValidBook();
         book.setId(id);
         Mockito.when(repository.findById(id)).thenReturn(Optional.of(book));
@@ -91,8 +89,8 @@ public class BookServiceTest {
 
     @Test
     @DisplayName("Deve retornar vazio quando o livro pesquisado pelo id não existir")
-    public void bookNotFoundById() {
-        Long id = 1l;
+    public void bookNotFoundByIdTest() {
+        Long id = 1L;
         Mockito.when(repository.findById(id)).thenReturn(Optional.empty());
 
         Optional<Book> book = service.getById(id);
@@ -124,8 +122,8 @@ public class BookServiceTest {
 
     @Test
     @DisplayName("Deve atualizar um livro")
-    public void updateBookById() {
-        Long id = 1l;
+    public void updateBookByIdTest() {
+        Long id = 1L;
         Book updatingBook = Book.builder().id(id).build();
 
         Book updatedBook = createValidBook();
@@ -160,10 +158,10 @@ public class BookServiceTest {
 
         PageRequest pageRequest = PageRequest.of(0, 10);
 
-        List<Book> asList = Arrays.asList(book);
-        Page<Book> page = new PageImpl<Book>(asList, pageRequest, 1);
+        List<Book> asList = Collections.singletonList(book);
+        Page<Book> page = new PageImpl<>(asList, pageRequest, 1);
         when(
-            repository.findAll(Mockito.<Example<Book>>any(), Mockito.<PageRequest>any()))
+            repository.findAll(Mockito.any(), Mockito.<PageRequest>any()))
         .thenReturn(page);
 
         Page<Book> result = service.find(book, pageRequest);

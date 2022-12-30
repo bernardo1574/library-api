@@ -26,11 +26,11 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Optional;
 
 @ActiveProfiles("test")
-@WebMvcTest
+@WebMvcTest(controllers = BookController.class)
 @AutoConfigureMockMvc
 public class BookControllerTest {
 
@@ -108,7 +108,7 @@ public class BookControllerTest {
     @Test
     @DisplayName("Deve obter todos os dados de um livro.")
     public void getBookDataTest() throws Exception {
-        Long id = 1l;
+        Long id = 1L;
         Book book = Book.builder()
                         .id(id)
                         .author(createNewBook().getAuthor())
@@ -148,7 +148,7 @@ public class BookControllerTest {
     @DisplayName("Deve deletar um livro ")
     public void deleteBookTest() throws Exception {
 
-        BDDMockito.given(service.getById(Mockito.anyLong())).willReturn(Optional.of(Book.builder().id(1l).build()));
+        BDDMockito.given(service.getById(Mockito.anyLong())).willReturn(Optional.of(Book.builder().id(1L).build()));
 
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
                 .delete(BOOK_API.concat("/1"))
@@ -161,7 +161,7 @@ public class BookControllerTest {
 
     @Test
     @DisplayName("Deve retornar resource not found quando não encontrar o livro para deletar.")
-    public void notFoundDeleteBook() throws Exception {
+    public void notFoundDeleteBookTest() throws Exception {
 
         BDDMockito.given(service.getById(Mockito.anyLong())).willReturn(Optional.empty());
 
@@ -177,7 +177,7 @@ public class BookControllerTest {
     @Test
     @DisplayName("Deve atualizar um livro ")
     public void updateBookTest() throws Exception {
-        Long id = 1l;
+        Long id = 1L;
         String json = new ObjectMapper().writeValueAsString(createNewBook());
 
         Book updatingBook = Book.builder().id(id).title("some title").author("some author").isbn("321").build();
@@ -222,7 +222,7 @@ public class BookControllerTest {
     @Test
     @DisplayName("Deve filtrar livros.")
     public void findBooksTest() throws Exception {
-        Long id = 1l;
+        Long id = 1L;
         Book book = Book.builder()
                         .id(id)
                         .title(createNewBook().getTitle())
@@ -230,7 +230,7 @@ public class BookControllerTest {
                         .isbn(createNewBook().getIsbn())
                 .build();
         BDDMockito.given(service.find(Mockito.any(Book.class),Mockito.any(Pageable.class)) )
-                .willReturn(new PageImpl<Book>(Arrays.asList(book), PageRequest.of(0, 100), 1));
+                .willReturn(new PageImpl<>(Collections.singletonList(book), PageRequest.of(0, 100), 1));
         
         String queryString = String.format("?title=%s&author=%s&page=0&size=100", book.getTitle(), book.getAuthor());
 

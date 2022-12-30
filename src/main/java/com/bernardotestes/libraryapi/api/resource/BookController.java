@@ -6,7 +6,10 @@ import com.bernardotestes.libraryapi.exception.BusinessException;
 import com.bernardotestes.libraryapi.model.entity.Book;
 import com.bernardotestes.libraryapi.service.BookService;
 import jakarta.validation.Valid;
+
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -63,6 +66,12 @@ public class BookController {
         }).orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
+    @GetMapping
+    public Page<BookDTO> find(BookDTO dto, Pageable pageRequest) {
+        Book filter = modelMapper.map(dto, Book.class);
+        return service.find(filter, pageRequest).map(entity -> modelMapper.map(entity, BookDTO.class));
+
+    }
     // EXCEPTIONS
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)

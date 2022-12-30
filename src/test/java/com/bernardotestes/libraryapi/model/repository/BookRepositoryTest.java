@@ -11,6 +11,8 @@ import com.bernardotestes.libraryapi.model.entity.Book;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Optional;
+
 @ActiveProfiles("test")
 @DataJpaTest
 public class BookRepositoryTest {
@@ -26,7 +28,7 @@ public class BookRepositoryTest {
   public void returnTrueWhenIsbnExists() {
     
     String isbn = "123";
-    Book book = createValidBook();
+    Book book = createNewBook();
     entityManager.persist(book);
 
     boolean exists = repository.existsByIsbn(isbn);
@@ -45,7 +47,47 @@ public class BookRepositoryTest {
     assertThat(exists).isFalse();
   }
 
-  private Book createValidBook() {
+  @Test
+  @DisplayName("Deve obeter um livro pelo id")
+  public void findByIdBookTest() {
+    
+    Book book = createNewBook();
+    entityManager.persist(book);
+
+    Optional<Book> foundBook = repository.findById(book.getId());
+
+    assertThat(foundBook.isPresent()).isTrue();
+
+  }
+
+  @Test
+  @DisplayName("Deve salvar um livro")
+  public void saveBookTest() {
+    Book book = createNewBook();
+    Book savedBook = repository.save(book);
+    assertThat(savedBook.getId()).isNotNull();
+  }
+ 
+  @Test
+  @DisplayName("Deve deletar um livro")
+  public void deleteBookTest() {
+    
+    Book book = createNewBook();
+    entityManager.persist(book);
+
+    Book foundBook = entityManager.find(Book.class, book.getId());
+
+    repository.delete(foundBook);
+
+    Book deletedBook = entityManager.find(Book.class, book.getId());
+
+    assertThat(deletedBook).isNull();
+
+  }
+  
+  
+
+  private Book createNewBook() {
       return Book.builder().isbn("123").author("Bernardo").title("Livro teste").build();
   }
 }

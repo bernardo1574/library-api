@@ -25,7 +25,7 @@ public class BookRepositoryTest {
 
   @Test
   @DisplayName("Deve retornar verdadeiro quando existir um livro na base com o isbn informado.")
-  public void returnTrueWhenIsbnExists() {
+  public void returnTrueWhenIsbnExistsTest() {
     
     String isbn = "123";
     Book book = createNewBook();
@@ -38,7 +38,7 @@ public class BookRepositoryTest {
 
   @Test
   @DisplayName("Deve retornar falso quando não existir um livro na base com o isbn informado.")
-  public void returnFalseWhenIsbnExists() {
+  public void returnFalseWhenIsbnExistsTest() {
     
     String isbn = "123";
 
